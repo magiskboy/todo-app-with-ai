@@ -548,6 +548,351 @@ Read file: src/main.tsx
 
 ---
 
+```diff
+- 
++ import styles from './styles.module.css'
++ 
++ interface LayoutProps {
++   children: React.ReactNode
++ }
++ 
++ const Layout = ({ children }: LayoutProps) => {
++   return (
++     <div className={styles.layoutContainer}>
++       <header className={styles.header}>
++         <h1>Todo App</h1>
++       </header>
++       <main className={styles.mainContent}>{children}</main>
++     </div>
++   )
++ }
++ 
++ export default Layout 
+```
+
+---
+
+```diff
+- 
++ .layoutContainer {
++   min-height: 100vh;
++   display: flex;
++   flex-direction: column;
++   background: #f9f9f9;
++ }
++ 
++ .header {
++   background: #222;
++   color: #fff;
++   padding: 1rem;
++   text-align: center;
++ }
++ 
++ .mainContent {
++   flex: 1;
++   padding: 1rem;
++   max-width: 600px;
++   margin: 0 auto;
++   width: 100%;
++ }
++ 
++ @media (max-width: 600px) {
++   .mainContent {
++     padding: 0.5rem;
++     max-width: 100%;
++   }
++   .header {
++     font-size: 1.2rem;
++     padding: 0.5rem;
++   }
++ } 
+```
+
+---
+
+```diff
+- 
++ export { default } from './layout' 
+```
+
+---
+
+```diff
+- 
++ import styles from './styles.module.css'
++ 
++ interface ButtonProps {
++   children: React.ReactNode
++   onClick?: () => void
++   type?: 'button' | 'submit' | 'reset'
++ }
++ 
++ const Button = ({ children, onClick, type = 'button' }: ButtonProps) => {
++   return (
++     <button className={styles.button} onClick={onClick} type={type}>
++       {children}
++     </button>
++   )
++ }
++ 
++ export default Button 
+```
+
+---
+
+```diff
+- 
++ .button {
++   background: #222;
++   color: #fff;
++   border: none;
++   border-radius: 4px;
++   padding: 0.5rem 1.2rem;
++   font-size: 1rem;
++   cursor: pointer;
++   transition: background 0.2s;
++ }
++ 
++ .button:hover {
++   background: #444;
++ }
++ 
++ @media (max-width: 600px) {
++   .button {
++     width: 100%;
++     font-size: 1.1rem;
++     padding: 0.7rem 0;
++   }
++ } 
+```
+
+---
+
+```diff
+- 
++ export { default } from './button' 
+```
+
+---
+
+```diff
+- 
++ :root {
++   --primary-color: #222;
++   --secondary-color: #fff;
++   --border-radius: 4px;
++   --font-family: 'Inter', Arial, sans-serif;
++ }
++ 
++ html, body {
++   margin: 0;
++   padding: 0;
++   font-family: var(--font-family);
++   background: #f9f9f9;
++   color: #222;
++   min-height: 100vh;
++ }
++ 
++ * {
++   box-sizing: border-box;
++ }
++ 
++ @media (max-width: 600px) {
++   html, body {
++     font-size: 17px;
++   }
++ } 
+```
+
+---
+
+```diff
+- import { useState } from 'react'
+- import reactLogo from './assets/react.svg'
+- import viteLogo from '/vite.svg'
+- import './App.css'
++ import Layout from './components/layout'
++ import Button from './components/button'
+  
+  function App() {
+-   const [count, setCount] = useState(0)
+- 
+    return (
+-     <>
+-       <div>
+-         <a href="https://vite.dev" target="_blank">
+-           <img src={viteLogo} className="logo" alt="Vite logo" />
+-         </a>
+-         <a href="https://react.dev" target="_blank">
+-           <img src={reactLogo} className="logo react" alt="React logo" />
+-         </a>
+-       </div>
+-       <h1>Vite + React</h1>
+-       <div className="card">
+-         <button onClick={() => setCount((count) => count + 1)}>
+-           count is {count}
+-         </button>
+-         <p>
+-           Edit <code>src/App.tsx</code> and save to test HMR
+-         </p>
+-       </div>
+-       <p className="read-the-docs">
+-         Click on the Vite and React logos to learn more
+-       </p>
+-     </>
++     <Layout>
++       <h2>Welcome to the Todo App</h2>
++       <Button>Example Button</Button>
++     </Layout>
+    )
+  }
+```
+
+---
+
+```diff
+  import { StrictMode } from 'react'
+  import { createRoot } from 'react-dom/client'
+- import './index.css'
++ import './styles/global.css'
+  import App from './App.tsx'
+  
+```
+
+---
+
+```diff
+  })
+  ```
++ 
++ ## Project Structure & Conventions
++ 
++ - **src/components**: UI components. Each component is in its own folder with:
++   - `index.ts` (barrel export)
++   - `[component].tsx` (main component file)
++   - `styles.module.css` (optional, for CSS modules)
++ - **src/contexts**: React contexts for global state.
++ - **src/services**: External service classes (OOP, e.g., Firebase).
++ - **src/hooks**: Custom hooks for all app logic.
++ - **src/styles**: Global styles and variables.
++ 
++ ### Coding Conventions
++ - Use camelCase for variables, UPPER_CASE for constants.
++ - Use CSS modules for component styling.
++ - All logic should be in hooks.
++ - Each hook/context in a single file.
++ - Mobile-first and responsive design.
+  
+```
+
+---
+
+Task 1 has been performed according to your requirements, technologies, and the plan:
+
+- The project structure is set up with the required folders (`components`, `contexts`, `services`, `hooks`, `styles`).
+- A responsive `Layout` component and a sample `Button` component (with CSS modules) have been created.
+- A global CSS file for base styles and variables is added and imported.
+- The `App.tsx` now uses the new layout and demonstrates the component structure.
+- The entry point imports the new global styles.
+- The `README.md` documents the folder structure and coding conventions.
+
+Your codebase is now ready for further feature development, following your conventions and supporting mobile-first responsive design. If you want to see the code for any specific file or proceed to the next task, let me know!
+
+---
+
+_**User**_
+
+base on @requirements.md @technologies.md , plan tasks to implement user login, write output to @task-2.md 
+
+---
+
+_**Assistant**_
+
+```diff
+  # Task 2: implement user login
+  
++ ## Implementation Plan
++ 
++ 1. **Set up Firebase Project**
++    - Create a Firebase project in the Firebase Console.
++    - Enable Google Authentication in the Firebase Authentication section.
++    - Add a new web app to the Firebase project and obtain the Firebase config object.
++ 
++ 2. **Install Firebase SDK**
++    - Add Firebase to the project dependencies using npm or yarn.
++ 
++ 3. **Create Firebase Service**
++    - In `src/services`, create a `FirebaseService` class to initialize Firebase and handle authentication logic (following OOP principles).
++ 
++ 4. **Implement Auth Context**
++    - In `src/contexts`, create an `AuthContext` to manage user authentication state globally.
++    - Provide methods for login (Google SSO) and logout.
++ 
++ 5. **Create Auth Hook**
++    - In `src/hooks`, create a custom hook (e.g., `useAuth`) to encapsulate authentication logic and expose it to components.
++ 
++ 6. **Build Login UI Component**
++    - In `src/components/login`, create a `login.tsx` component for the login button/UI.
++    - Use CSS modules for styling.
++    - Ensure the UI is responsive for mobile and desktop.
++ 
++ 7. **Integrate Login Flow**
++    - Use the `useAuth` hook and `AuthContext` in the main app to display the login UI when the user is not authenticated.
++    - On successful login, store user data in context and proceed to the main app.
++ 
++ 8. **Persist User Session**
++    - Ensure the user's authentication state persists across page reloads using Firebase's built-in session management.
++ 
++ 9. **Testing**
++    - Test the login flow to ensure users can sign in with Google and their session is managed correctly on both mobile and desktop.
++ 
+  
+```
+
+---
+
+A detailed step-by-step plan to implement user login (Google SSO via Firebase) has been written to `.cursor/tasks/task-2.md`. This plan follows your requirements and technology stack, and includes all necessary steps for a robust, responsive authentication flow. If you want to proceed with any specific step or need code examples, just let me know!
+
+---
+
+_**User**_
+
+information of user like fullname and profile image should be show on topbar of app
+
+---
+
+_**Assistant**_
+
+To address your requirement:
+
+**When a user is logged in, their full name and profile image should be displayed on the topbar (header) of the app.**
+
+Here’s how this will be integrated into your plan and codebase:
+
+### Plan Update for User Info in Topbar
+
+1. **Update Auth Context & Hook**
+   - Ensure the user’s full name and profile image URL are included in the user object stored in context after login.
+
+2. **Update Layout Component**
+   - Modify the `Layout` component’s header to display the user’s full name and profile image when authenticated.
+   - If the user is not logged in, show the default app title.
+
+3. **Styling**
+   - Adjust the header’s CSS module to accommodate the user info, ensuring it remains responsive for mobile and desktop.
+
+Would you like to proceed with implementing these changes, or do you want to see a more detailed step-by-step plan for this specific feature?
+
+---
+
+_**User**_
+
+have'nt implemeted yet, add this requirement to plan 
+
+---
+
+_**Assistant**_
+
 
 
 ---
