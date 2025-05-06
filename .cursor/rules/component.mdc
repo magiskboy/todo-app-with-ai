@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- A component must be in a single folder
+- A component folder must be in src/components folder
+- A component folder must follow this conventions:
+    - index.ts [must have]
+    - [component name].tsx like button.tsx [must have]
+    - styles.tsx [optional]
+- Apply css module for styling component

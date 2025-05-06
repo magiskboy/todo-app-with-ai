@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- All of external thirdparties must be in src/services folder
+- Service must be implemented by class and follow OOP strongly

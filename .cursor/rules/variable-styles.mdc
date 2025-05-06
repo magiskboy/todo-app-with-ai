@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Variables must be camel case style
+- Must use upper case for constants

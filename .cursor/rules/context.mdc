@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- context must be in src/contexts folder
+- all global data of app must be contained in contexts

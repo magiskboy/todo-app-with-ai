@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- each hook or context must be in a single file
+- All logic of app must be in hooks
+- hooks must be in @src/hooks folder
