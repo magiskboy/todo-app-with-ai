@@ -52,3 +52,21 @@ export default tseslint.config({
   },
 })
 ```
+
+## Project Structure & Conventions
+
+- **src/components**: UI components. Each component is in its own folder with:
+  - `index.ts` (barrel export)
+  - `[component].tsx` (main component file)
+  - `styles.module.css` (optional, for CSS modules)
+- **src/contexts**: React contexts for global state.
+- **src/services**: External service classes (OOP, e.g., Firebase).
+- **src/hooks**: Custom hooks for all app logic.
+- **src/styles**: Global styles and variables.
+
+### Coding Conventions
+- Use camelCase for variables, UPPER_CASE for constants.
+- Use CSS modules for component styling.
+- All logic should be in hooks.
+- Each hook/context in a single file.
+- Mobile-first and responsive design.
