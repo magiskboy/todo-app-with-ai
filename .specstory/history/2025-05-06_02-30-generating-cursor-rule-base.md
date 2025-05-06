@@ -2101,3 +2101,15 @@ Ensure `TaskItem.tsx` exists in the correct folder with the correct name and con
 
 ---
 
+_**User**_
+
+base on @requirements.md @technologies.md  plan to migrate pure css to antd design, i just added new tech antd and write down to @task-4.md 
+
+---
+
+_**Assistant**_
+
+
+
+---
+
