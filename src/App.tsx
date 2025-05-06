@@ -1,17 +1,20 @@
 import Layout from './components/layout'
-import Button from './components/button'
 import Login from './components/login'
 import { AuthProvider, useAuthContext } from './contexts/AuthContext'
+import { TaskProvider } from './contexts/TaskContext'
+import { TaskForm, TaskList } from './components/task'
 
 function AppContent() {
   const { user, loading } = useAuthContext()
   if (loading) return <div>Loading...</div>
   if (!user) return <Login />
   return (
-    <Layout>
-      <h2>Welcome to the Todo App</h2>
-      <Button>Example Button</Button>
-    </Layout>
+    <TaskProvider>
+      <Layout>
+        <TaskForm />
+        <TaskList />
+      </Layout>
+    </TaskProvider>
   )
 }
 
