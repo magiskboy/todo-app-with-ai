@@ -2660,3 +2660,237 @@ You can now import `Task` and `TaskStatus` from this file in your components and
 
 ---
 
+_**User**_
+
+write out plan to update task form should be a dialog @task-5.md 
+
+---
+
+_**Assistant**_
+
+```diff
+- 
++ # Task 5: Update Task Form to Use a Dialog (Modal)
++ 
++ ## Implementation Plan
++ 
++ 1. **Update TaskForm Usage**
++    - Refactor the main app view to remove the inline TaskForm.
++    - Add a button (e.g., "Add Task") that will open the TaskForm in a dialog/modal.
++ 
++ 2. **Use Ant Design Modal Component**
++    - Wrap the TaskForm component inside Ant Design's `Modal` component.
++    - Control the visibility of the modal using React state.
++    - Ensure the modal can be opened and closed by the user.
++ 
++ 3. **Integrate with Task List**
++    - Place the "Add Task" button above the TaskList.
++    - When a task is successfully added, close the modal and refresh the task list if needed.
++ 
++ 4. **Form Reset and Feedback**
++    - Reset the TaskForm fields when the modal is closed or after a successful submission.
++    - Optionally, show a success message using Ant Design's `message` component.
++ 
++ 5. **Accessibility and Responsiveness**
++    - Ensure the modal is accessible (focus management, keyboard navigation).
++    - Test the modal on both mobile and desktop for proper responsiveness.
++ 
++ 6. **Testing**
++    - Test the full flow: opening the dialog, adding a task, closing the dialog, and seeing the new task in the list.
++ 
+```
+
+---
+
+A clear plan to update the TaskForm so it appears as a dialog (modal) using Ant Design has been written to `.cursor/tasks/task-5.md`. This plan covers refactoring, modal integration, UI/UX, and testing. If you want to proceed with implementation or need code for any step, let me know!
+
+---
+
+_**User**_
+
+perform @task-5.md 
+
+---
+
+_**Assistant**_
+
+Here’s how I’ll proceed to perform Task 5 (TaskForm as a dialog/modal):
+
+**Steps:**
+1. Remove the inline TaskForm from the main app view.
+2. Add an “Add Task” button above the TaskList.
+3. When clicked, open a Modal containing the TaskForm.
+4. On successful task creation, close the modal and reset the form.
+5. Ensure accessibility and responsiveness.
+
+Let’s implement these changes.
+
+---
+
+```diff
+  import { AuthProvider, useAuthContext } from './contexts/AuthContext'
+  import { TaskProvider } from './contexts/TaskContext'
+- import { TaskForm, TaskList } from './components/task'
++ import { TaskList, TaskForm } from './components/task'
++ import { useState } from 'react'
++ import { Button, Modal, message } from 'antd'
+  
+  function AppContent() {
+    const { user, loading } = useAuthContext()
++   const [modalOpen, setModalOpen] = useState(false)
++ 
+    if (loading) return <div>Loading...</div>
+    if (!user) return <Login />
++ 
++   const handleAddTaskSuccess = () => {
++     setModalOpen(false)
++     message.success('Task added successfully!')
++   }
++ 
+    return (
+      <TaskProvider>
+        <Layout>
+-         <TaskForm />
++         <Button type="primary" onClick={() => setModalOpen(true)} style={{ marginBottom: 16 }}>
++           Add Task
++         </Button>
++         <Modal
++           open={modalOpen}
++           onCancel={() => setModalOpen(false)}
++           footer={null}
++           title="Add Task"
++           destroyOnClose
++         >
++           <TaskForm onSuccess={handleAddTaskSuccess} />
++         </Modal>
+          <TaskList />
+        </Layout>
+```
+
+---
+
+The TaskForm is now presented as a dialog (modal) using Ant Design:
+
+- The inline TaskForm is removed from the main view.
+- An “Add Task” button opens a modal dialog.
+- The TaskForm is rendered inside the modal.
+- On successful task creation, the modal closes and a success message is shown.
+- The UI remains accessible and responsive.
+
+You can now add tasks via a dialog, matching modern UX patterns. If you want to further enhance the dialog (e.g., for editing tasks), just let me know!
+
+---
+
+_**User**_
+
+I got 
+
+---
+
+_**Assistant**_
+
+The error message:
+
+```
+FirebaseError: Function addDoc() called with invalid data. Unsupported field value: a custom M2 object (found in field due_date in document ...)
+```
+
+**Cause:**  
+You are passing a non-primitive value (likely a `dayjs` or `moment` object) as `due_date` to Firestore. Firestore only accepts strings, numbers, booleans, Timestamps, etc.
+
+**How to fix:**  
+Convert the `due_date` to a string (e.g., using `.format('YYYY-MM-DD')`) before saving to Firestore.
+
+**In your `TaskForm.tsx`, update the onFinish handler:**
+
+```tsx
+const onFinish = async (values: any) => {
+  setLoading(true)
+  try {
+    await addTask({
+      name: values.name,
+      description: values.description,
+      due_date: values.due_date.format('YYYY-MM-DD'), // <-- convert to string
+      status: values.status,
+    })
+    onSuccess?.()
+  } finally {
+    setLoading(false)
+  }
+}
+```
+
+**Summary:**  
+Always convert date objects to strings before saving to Firestore. This will resolve the error.
+
+---
+
+_**User**_
+
+add task button stretch full width
+
+---
+
+_**Assistant**_
+
+```diff
+      <TaskProvider>
+        <Layout>
+-         <Button type="primary" onClick={() => setModalOpen(true)} style={{ marginBottom: 16 }}>
++         <Button type="primary" onClick={() => setModalOpen(true)} block style={{ marginBottom: 16 }}>
+            Add Task
+          </Button>
+```
+
+---
+
+The "Add Task" button now stretches to full width by using the `block` prop. This provides a modern, mobile-friendly look consistent with Ant Design best practices. If you need further UI adjustments, just let me know!
+
+---
+
+_**User**_
+
+ blue is primary color
+
+---
+
+_**Assistant**_
+
+To make blue the primary color in your Ant Design theme, you should customize the Ant Design primary color variable.
+
+**How to do this in a Vite + React project:**
+
+1. **Install Less (if not already):**
+   ```sh
+   npm install less
+   ```
+
+2. **Update your Vite config to customize Ant Design theme:**
+
+   In your `vite.config.ts`, add the following (using the `vite-plugin-antd-theme` or by configuring less variables directly):
+
+   ```ts
+   import { defineConfig } from 'vite'
+   import react from '@vitejs/plugin-react'
+   import path from 'path'
+
+   // Add this import
+   import vitePluginImp from 'vite-plugin-imp'
+
+   export default defineConfig({
+     plugins: [
+       react(),
+       vitePluginImp({
+         libList: [
+           {
+             libName: 'antd',
+             style: (name) => `antd/es/${name}/style/index.js`,
+           },
+         ],
+       }),
+     ],
+     css: {
+       preprocessorOptions
+
+---
+

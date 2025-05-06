@@ -19,7 +19,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
       await addTask({
         name: values.name,
         description: values.description,
-        due_date: values.due_date,
+        due_date: values.due_date.toString(),
         status: values.status,
       })
       onSuccess?.()

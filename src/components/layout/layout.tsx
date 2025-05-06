@@ -14,7 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <AntdLayout style={{ minHeight: '100vh', background: '#f9f9f9' }}>
-      <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#222', color: '#fff', padding: '0 1rem' }}>
+      <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff', padding: '0 1rem' }}>
         <Title level={3} style={{ color: '#fff', margin: 0 }}>Todo App</Title>
         {user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
