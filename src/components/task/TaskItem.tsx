@@ -1,24 +1,30 @@
 import type { Task } from '../../services/FirebaseService'
-import styles from './styles.module.css'
+import { Card, Tag, Typography } from 'antd'
 
 interface TaskItemProps {
   task: Task
 }
 
+const statusColor: Record<string, string> = {
+  'New': 'blue',
+  'In progress': 'gold',
+  'Done': 'green',
+  'Cancelled': 'red',
+}
+
 const TaskItem = ({ task }: TaskItemProps) => {
   return (
-    <div className={styles.taskItem}>
-      <div className={styles.taskHeader}>
-        <span className={styles.taskName}>{task.name}</span>
-        <span className={styles.taskStatus}>{task.status}</span>
+    <Card
+      type="inner"
+      title={<span>{task.name} <Tag color={statusColor[task.status]}>{task.status}</Tag></span>}
+      style={{ marginBottom: 16 }}
+    >
+      <Typography.Paragraph>{task.description}</Typography.Paragraph>
+      <div style={{ fontSize: 13, color: '#888' }}>
+        <span>Due: {task.due_date}</span> | <span>Created: {task.created_at}</span>
       </div>
-      <div className={styles.taskMeta}>
-        <span>Due: {task.due_date}</span>
-        <span>Created: {task.created_at}</span>
-      </div>
-      <div className={styles.taskDescription}>{task.description}</div>
       {/* Actions (edit, delete, status update) will be added here */}
-    </div>
+    </Card>
   )
 }
 

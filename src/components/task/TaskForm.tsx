@@ -1,35 +1,27 @@
 import React, { useState } from 'react'
 import { useTasks } from '../../hooks/useTasks'
 import { TaskStatus } from '../../services/FirebaseService'
-import styles from './styles.module.css'
-import Button from '../button'
-
+import { Form, Input, Select, DatePicker, Button as AntdButton, Card } from 'antd'
+import type { Task } from '../../types/Task'
 interface TaskFormProps {
   onSuccess?: () => void
 }
 
-const initialState = {
-  name: '',
-  description: '',
-  due_date: '',
-  status: TaskStatus.New,
-}
+const { TextArea } = Input
 
 const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
   const { addTask } = useTasks()
-  const [form, setForm] = useState(initialState)
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onFinish = async (values: Task) => {
     setLoading(true)
     try {
-      await addTask(form)
-      setForm(initialState)
+      await addTask({
+        name: values.name,
+        description: values.description,
+        due_date: values.due_date,
+        status: values.status,
+      })
       onSuccess?.()
     } finally {
       setLoading(false)
@@ -37,44 +29,31 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <form className={styles.taskForm} onSubmit={handleSubmit}>
-      <input
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        placeholder="Task name"
-        required
-        className={styles.input}
-      />
-      <textarea
-        name="description"
-        value={form.description}
-        onChange={handleChange}
-        placeholder="Description"
-        className={styles.textarea}
-      />
-      <input
-        name="due_date"
-        value={form.due_date}
-        onChange={handleChange}
-        type="date"
-        required
-        className={styles.input}
-      />
-      <select
-        name="status"
-        value={form.status}
-        onChange={handleChange}
-        className={styles.select}
-      >
-        {Object.values(TaskStatus).map(status => (
-          <option key={status} value={status}>{status}</option>
-        ))}
-      </select>
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : 'Add Task'}
-      </Button>
-    </form>
+    <Card style={{ marginBottom: 24 }}>
+      <Form layout="vertical" onFinish={onFinish} initialValues={{ status: TaskStatus.New }}>
+        <Form.Item name="name" label="Task name" rules={[{ required: true, message: 'Please enter a task name' }]}> 
+          <Input placeholder="Task name" />
+        </Form.Item>
+        <Form.Item name="description" label="Description">
+          <TextArea placeholder="Description" autoSize={{ minRows: 2, maxRows: 4 }} />
+        </Form.Item>
+        <Form.Item name="due_date" label="Due date" rules={[{ required: true, message: 'Please select a due date' }]}> 
+          <DatePicker style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item name="status" label="Status">
+          <Select>
+            {Object.values(TaskStatus).map(status => (
+              <Select.Option key={status} value={status}>{status}</Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <AntdButton type="primary" htmlType="submit" loading={loading} block>
+            Add Task
+          </AntdButton>
+        </Form.Item>
+      </Form>
+    </Card>
   )
 }
 

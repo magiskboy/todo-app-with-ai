@@ -1,6 +1,6 @@
 import { useTasks } from '../../hooks/useTasks'
-import TaskItem from './TaskItem';
-import styles from './styles.module.css'
+import TaskItem from './TaskItem'
+import { List, Card } from 'antd'
 
 const TaskList = () => {
   const { tasks, loading } = useTasks()
@@ -9,11 +9,13 @@ const TaskList = () => {
   if (!tasks.length) return <div>No tasks found.</div>
 
   return (
-    <div className={styles.taskList}>
-      {tasks.map(task => (
-        <TaskItem key={task.id} task={task} />
-      ))}
-    </div>
+    <Card>
+      <List
+        dataSource={tasks}
+        renderItem={task => <TaskItem key={task.id} task={task} />}
+        itemLayout="vertical"
+      />
+    </Card>
   )
 }
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { FirebaseService, Task, TaskStatus } from '../services/FirebaseService'
+import { FirebaseService, TaskStatus } from '../services/FirebaseService'
 import { useAuthContext } from './AuthContext'
+import type { Task } from '../types/Task'
 
 interface TaskContextType {
   tasks: Task[]

@@ -1,18 +1,12 @@
-import styles from './styles.module.css'
+import { Button as AntdButton } from 'antd'
+import type { ButtonProps as AntdButtonProps } from 'antd'
 
-interface ButtonProps {
+interface ButtonProps extends AntdButtonProps {
   children: React.ReactNode
-  onClick?: () => void
-  type?: 'button' | 'submit' | 'reset'
-  disabled?: boolean
 }
 
-const Button = ({ children, onClick, type = 'button', disabled = false }: ButtonProps) => {
-  return (
-    <button className={styles.button} onClick={onClick} type={type} disabled={disabled}>
-      {children}
-    </button>
-  )
+const Button = ({ children, ...props }: ButtonProps) => {
+  return <AntdButton {...props}>{children}</AntdButton>
 }
 
 export default Button 

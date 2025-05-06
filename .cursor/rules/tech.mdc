@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- technologies must be followed by [technologies.md](mdc:.cursor/technologies.md)
+- requirement must be followed by [technologies.md](mdc:.cursor/technologies.md)
