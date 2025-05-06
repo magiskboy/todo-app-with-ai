@@ -893,11 +893,558 @@ have'nt implemeted yet, add this requirement to plan
 
 _**Assistant**_
 
+```diff
+     - In `src/contexts`, create an `AuthContext` to manage user authentication state globally.
+     - Provide methods for login (Google SSO) and logout.
++    - Store user information (full name and profile image) in context after login.
+  
+  5. **Create Auth Hook**
+```
 
+```diff
+     - On successful login, store user data in context and proceed to the main app.
+  
+- 8. **Persist User Session**
++ 8. **Display User Info in Topbar**
++    - Update the `Layout` component to show the user's full name and profile image in the topbar/header when authenticated.
++    - Ensure the topbar remains responsive and visually appealing on both mobile and desktop.
++ 
++ 9. **Persist User Session**
+     - Ensure the user's authentication state persists across page reloads using Firebase's built-in session management.
+  
+- 9. **Testing**
+-    - Test the login flow to ensure users can sign in with Google and their session is managed correctly on both mobile and desktop.
++ 10. **Testing**
++    - Test the login flow to ensure users can sign in with Google, their session is managed correctly, and their info appears in the topbar on both mobile and desktop.
+  
+  
+```
 
 ---
 
+The requirement to display the user's full name and profile image in the topbar after login has been added to the plan in `.cursor/tasks/task-2.md`. This ensures the feature will be implemented as part of the user login flow, with attention to responsiveness and visual appeal on both mobile and desktop. If you want to proceed with implementation or need further planning, let me know!
 
+---
+
+_**User**_
+
+base on @requirements.md @technologies.md  and @task-2.md , perform task 
+
+---
+
+_**Assistant**_
+
+Here’s a step-by-step plan to perform Task 2 (implement user login with Google SSO via Firebase, including showing user info in the topbar), based on your requirements, technologies, and the plan in `.cursor/tasks/task-2.md`:
+
+---
+
+### 1. Set up Firebase Project
+- Go to the [Firebase Console](https://console.firebase.google.com/), create a new project.
+- Enable Google Authentication in the Authentication section.
+- Register a new web app and copy the Firebase config object.
+
+### 2. Install Firebase SDK
+Run:
+```sh
+npm install firebase
+```
+
+---
+
+### 3. Create Firebase Service
+- In `src/services`, create a `FirebaseService` class to initialize Firebase and handle authentication logic (OOP style).
+
+### 4. Implement Auth Context
+- In `src/contexts`, create an `AuthContext` to manage authentication state and user info (full name, profile image).
+- Provide login/logout methods.
+
+### 5. Create Auth Hook
+- In `src/hooks`, create a `useAuth` hook to encapsulate authentication logic and expose it to components.
+
+### 6. Build Login UI Component
+- In `src/components/login`, create a `login.tsx` component for the login button/UI.
+- Use CSS modules for styling and ensure responsiveness.
+
+### 7. Integrate Login Flow
+- Use the `useAuth` hook and `AuthContext` in the main app to display the login UI when the user is not authenticated.
+- On successful login, store user data in context and proceed to the main app.
+
+### 8. Display User Info in Topbar
+- Update the `Layout` component to show the user's full name and profile image in the topbar/header when authenticated.
+- Ensure the topbar is responsive and visually appealing.
+
+### 9. Persist User Session
+- Use Firebase’s built-in session management to persist authentication state.
+
+### 10. Testing
+- Test the login flow, session persistence, and user info display on both mobile and desktop.
+
+---
+
+#### Would you like to proceed with the code for each step, or do you want to start with a specific part (e.g., Firebase service, Auth context, or UI)?  
+Let me know your preference and I’ll generate the code accordingly!
+
+---
+
+_**User**_
+
+yes, you can perform right now, ignore task what depends on me like create firebase project 
+
+---
+
+_**Assistant**_
+
+```diff
+- 
++ import { initializeApp, FirebaseApp } from 'firebase/app'
++ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth'
++ 
++ const FIREBASE_CONFIG = {
++   apiKey: 'YOUR_API_KEY',
++   authDomain: 'YOUR_AUTH_DOMAIN',
++   projectId: 'YOUR_PROJECT_ID',
++   storageBucket: 'YOUR_STORAGE_BUCKET',
++   messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
++   appId: 'YOUR_APP_ID',
++ }
++ 
++ export class FirebaseService {
++   private static instance: FirebaseService
++   private app: FirebaseApp
++   private auth = getAuth()
++   private provider = new GoogleAuthProvider()
++ 
++   private constructor() {
++     this.app = initializeApp(FIREBASE_CONFIG)
++   }
++ 
++   static getInstance() {
++     if (!FirebaseService.instance) {
++       FirebaseService.instance = new FirebaseService()
++     }
++     return FirebaseService.instance
++   }
++ 
++   signInWithGoogle() {
++     return signInWithPopup(this.auth, this.provider)
++   }
++ 
++   signOut() {
++     return signOut(this.auth)
++   }
++ 
++   onAuthStateChanged(callback: (user: User | null) => void) {
++     return this.auth.onAuthStateChanged(callback)
++   }
++ 
++   getCurrentUser() {
++     return this.auth.currentUser
++   }
++ } 
+```
+
+---
+
+```diff
+- 
++ import React, { createContext, useContext, useEffect, useState } from 'react'
++ import { FirebaseService } from '../services/FirebaseService'
++ import type { User } from 'firebase/auth'
++ 
++ interface AuthUser {
++   uid: string
++   displayName: string | null
++   photoURL: string | null
++   email: string | null
++ }
++ 
++ interface AuthContextType {
++   user: AuthUser | null
++   loading: boolean
++   login: () => Promise<void>
++   logout: () => Promise<void>
++ }
++ 
++ const AuthContext = createContext<AuthContextType | undefined>(undefined)
++ 
++ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
++   const [user, setUser] = useState<AuthUser | null>(null)
++   const [loading, setLoading] = useState(true)
++   const firebase = FirebaseService.getInstance()
++ 
++   useEffect(() => {
++     const unsubscribe = firebase.onAuthStateChanged((firebaseUser: User | null) => {
++       if (firebaseUser) {
++         setUser({
++           uid: firebaseUser.uid,
++           displayName: firebaseUser.displayName,
++           photoURL: firebaseUser.photoURL,
++           email: firebaseUser.email,
++         })
++       } else {
++         setUser(null)
++       }
++       setLoading(false)
++     })
++     return () => unsubscribe()
++   }, [])
++ 
++   const login = async () => {
++     setLoading(true)
++     try {
++       await firebase.signInWithGoogle()
++     } finally {
++       setLoading(false)
++     }
++   }
++ 
++   const logout = async () => {
++     setLoading(true)
++     try {
++       await firebase.signOut()
++     } finally {
++       setLoading(false)
++     }
++   }
++ 
++   return (
++     <AuthContext.Provider value={{ user, loading, login, logout }}>
++       {children}
++     </AuthContext.Provider>
++   )
++ }
++ 
++ export const useAuthContext = () => {
++   const ctx = useContext(AuthContext)
++   if (!ctx) throw new Error('useAuthContext must be used within AuthProvider')
++   return ctx
++ } 
+```
+
+---
+
+```diff
+- 
++ import { useAuthContext } from '../contexts/AuthContext'
++ 
++ export const useAuth = () => {
++   return useAuthContext()
++ } 
+```
+
+---
+
+```diff
+- 
++ import { useAuth } from '../../hooks/useAuth'
++ import styles from './styles.module.css'
++ import Button from '../button'
++ 
++ const Login = () => {
++   const { login, loading } = useAuth()
++ 
++   return (
++     <div className={styles.loginContainer}>
++       <h2>Sign in to your Todo App</h2>
++       <Button onClick={login} type="button" disabled={loading}>
++         {loading ? 'Signing in...' : 'Sign in with Google'}
++       </Button>
++     </div>
++   )
++ }
++ 
++ export default Login 
+```
+
+---
+
+```diff
+- 
++ .loginContainer {
++   display: flex;
++   flex-direction: column;
++   align-items: center;
++   justify-content: center;
++   min-height: 60vh;
++   background: #fff;
++   border-radius: 8px;
++   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
++   padding: 2rem 1rem;
++   margin: 2rem auto;
++   max-width: 350px;
++ }
++ 
++ @media (max-width: 600px) {
++   .loginContainer {
++     min-height: 40vh;
++     padding: 1rem 0.5rem;
++     margin: 1rem auto;
++     max-width: 95vw;
++   }
++ } 
+```
+
+---
+
+```diff
+- 
++ export { default } from './login' 
+```
+
+---
+
+```diff
+    onClick?: () => void
+    type?: 'button' | 'submit' | 'reset'
++   disabled?: boolean
+  }
+  
+- const Button = ({ children, onClick, type = 'button' }: ButtonProps) => {
++ const Button = ({ children, onClick, type = 'button', disabled = false }: ButtonProps) => {
+    return (
+-     <button className={styles.button} onClick={onClick} type={type}>
++     <button className={styles.button} onClick={onClick} type={type} disabled={disabled}>
+        {children}
+      </button>
+```
+
+---
+
+```diff
+  import styles from './styles.module.css'
++ import { useAuth } from '../../hooks/useAuth'
+  
+  interface LayoutProps {
+```
+
+```diff
+  
+  const Layout = ({ children }: LayoutProps) => {
++   const { user, logout } = useAuth()
++ 
+    return (
+      <div className={styles.layoutContainer}>
+        <header className={styles.header}>
+          <h1>Todo App</h1>
++         {user && (
++           <div className={styles.userInfo}>
++             {user.photoURL && <img src={user.photoURL} alt={user.displayName || 'User'} className={styles.avatar} />}
++             <span className={styles.displayName}>{user.displayName}</span>
++             <button className={styles.logoutBtn} onClick={logout} title="Logout">Logout</button>
++           </div>
++         )}
+        </header>
+        <main className={styles.mainContent}>{children}</main>
+```
+
+---
+
+```diff
+    padding: 1rem;
+    text-align: center;
++   position: relative;
++   display: flex;
++   align-items: center;
++   justify-content: space-between;
++ }
++ 
++ .userInfo {
++   display: flex;
++   align-items: center;
++   gap: 0.5rem;
++ }
++ 
++ .avatar {
++   width: 36px;
++   height: 36px;
++   border-radius: 50%;
++   object-fit: cover;
++   border: 2px solid #fff;
++ }
++ 
++ .displayName {
++   font-weight: 500;
++   color: #fff;
++   margin-right: 0.5rem;
++ }
++ 
++ .logoutBtn {
++   background: #fff;
++   color: #222;
++   border: none;
++   border-radius: 4px;
++   padding: 0.3rem 0.8rem;
++   cursor: pointer;
++   font-size: 0.95rem;
++   transition: background 0.2s;
++ }
++ 
++ .logoutBtn:hover {
++   background: #eee;
+  }
+  
+```
+
+```diff
+      font-size: 1.2rem;
+      padding: 0.5rem;
++     flex-direction: column;
++     align-items: flex-start;
++     gap: 0.5rem;
++   }
++   .userInfo {
++     gap: 0.3rem;
++   }
++   .avatar {
++     width: 28px;
++     height: 28px;
++   }
++   .displayName {
++     font-size: 0.95rem;
++   }
++   .logoutBtn {
++     font-size: 0.9rem;
++     padding: 0.2rem 0.6rem;
+    }
+  } 
+```
+
+---
+
+```diff
+  import Layout from './components/layout'
+  import Button from './components/button'
++ import Login from './components/login'
++ import { AuthProvider, useAuthContext } from './contexts/AuthContext'
+  
+- function App() {
++ function AppContent() {
++   const { user, loading } = useAuthContext()
++   if (loading) return <div>Loading...</div>
++   if (!user) return <Login />
+    return (
+      <Layout>
+```
+
+```diff
+    )
+  }
++ 
++ function App() {
++   return (
++     <AuthProvider>
++       <AppContent />
++     </AuthProvider>
++   )
++ }
+  
+  export default App
+```
+
+---
+
+All codebase tasks for user login (Google SSO via Firebase) have been performed, except for the Firebase project setup (which you must do). Here’s what’s now implemented:
+
+- **FirebaseService**: OOP class for Firebase auth logic.
+- **AuthContext**: Manages user state, login/logout, and exposes user info (full name, profile image).
+- **useAuth hook**: For accessing auth state/actions in components.
+- **Login component**: Responsive, uses Google SSO, styled with CSS modules.
+- **Layout component**: Shows user’s full name and profile image in the topbar when authenticated, with responsive styles.
+- **App integration**: AuthProvider wraps the app, shows Login if not authenticated, otherwise shows main content.
+- **Button component**: Now supports a disabled state for loading.
+
+**Next steps for you:**
+1. Fill in your Firebase config in `src/services/FirebaseService.ts`.
+2. Run `npm install firebase` to resolve missing dependencies.
+
+If you want to see or adjust any code, or need help with the next feature, let me know!
+
+---
+
+_**User**_
+
+For the code present, we get this error:
+```
+Cannot find module 'firebase/auth' or its corresponding type declarations.
+```
+How can I resolve this? If you propose a fix, please make it concise.
+
+---
+
+_**Assistant**_
+
+You need to install the Firebase SDK and its TypeScript types.  
+Run this command in your project root:
+
+```sh
+npm install firebase
+```
+
+That’s all you need—Firebase includes its own TypeScript types, so no extra type package is required.  
+After installing, the error will be resolved.
+
+---
+
+_**User**_
+
+@FirebaseService.ts I got "chunk-YEQUFVDJ.js?v=b5280577:1751 Uncaught FirebaseError: Firebase: No Firebase App '[DEFAULT]' has been created - call initializeApp() first (app/no-app).
+    at new FirebaseService (FirebaseService.ts:19:18)
+    at FirebaseService.getInstance (FirebaseService.ts:28:34)
+    at AuthProvider (AuthContext.tsx:24:36)
+"
+
+---
+
+_**Assistant**_
+
+This error occurs because `getAuth()` is being called before `initializeApp()`.  
+You should initialize the app first, then call `getAuth(app)` with the initialized app.
+
+**Fix:**  
+Update your `FirebaseService` like this:
+
+```ts
+export class FirebaseService {
+  private static instance: FirebaseService
+  private app: FirebaseApp
+  private auth
+  private provider = new GoogleAuthProvider()
+
+  private constructor() {
+    this.app = initializeApp(FIREBASE_CONFIG)
+    this.auth = getAuth(this.app) // Pass the app instance here
+  }
+
+  static getInstance() {
+    if (!FirebaseService.instance) {
+      FirebaseService.instance = new FirebaseService()
+    }
+    return FirebaseService.instance
+  }
+
+  signInWithGoogle() {
+    return signInWithPopup(this.auth, this.provider)
+  }
+
+  signOut() {
+    return signOut(this.auth)
+  }
+
+  onAuthStateChanged(callback: (user: User | null) => void) {
+    return this.auth.onAuthStateChanged(callback)
+  }
+
+  getCurrentUser() {
+    return this.auth.currentUser
+  }
+}
+```
+
+**Summary:**  
+- Move `getAuth()` into the constructor, after `initializeApp()`.
+- Pass the `app` instance to `getAuth(this.app)`.
+
+This will resolve the error.
 
 ---
 

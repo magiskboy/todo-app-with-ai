@@ -10,6 +10,45 @@
   color: #fff;
   padding: 1rem;
   text-align: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.displayName {
+  font-weight: 500;
+  color: #fff;
+  margin-right: 0.5rem;
+}
+
+.logoutBtn {
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #eee;
 }
 
 .mainContent {
@@ -28,5 +67,22 @@
   .header {
     font-size: 1.2rem;
     padding: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .userInfo {
+    gap: 0.3rem;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .displayName {
+    font-size: 0.95rem;
+  }
+  .logoutBtn {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
   }
 } 
